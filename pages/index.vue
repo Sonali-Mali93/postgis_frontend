@@ -179,7 +179,49 @@ function onMapLoaded(map: mapboxgl.Map) {
       "line-width": 3,
     },
   });
-  
+  polygon();
+  async function polygon() {
+    state.polygon = await $fetch("http://localhost:3001/backend/polygon");
+    console.log(state.polygon);
+    console.log("data: ", state.polygon);
+    const featureCollection = {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: [],
+      },
+    };
+    featureCollection.data.features = state.polygon.map((element) => {
+      return {
+        type: "Feature",
+        geometry: {
+          type: "Polygon",
+          coordinates: element.polygon.coordinates,
+        },
+      };
+    });
+    map.addSource("polygon-data", featureCollection);
+    map.addLayer({
+      id: "park-boundary",
+      type: "fill",
+      source: "polygon-data",
+      paint: {
+        "fill-color": " #A020F0",
+        "fill-opacity": 0.4,
+      },
+    });
+    map.addLayer({
+      id: "outline",
+      type: "line",
+      source: "polygon-data",
+      layout: {},
+      paint: {
+        "line-color": "#FF0000",
+        //dark blackish
+        "line-width": 5,
+      },
+    });
+  }
 
 }
 
