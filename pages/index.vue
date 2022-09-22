@@ -17,17 +17,18 @@
         <label for="outdoors-v11">outdoors</label>
       </div>
     </main>
-    <p>{{state.data}}</p>
   </div>
 </template>
 <script setup lang="ts">
 // import "mapbox-gl/dist/mapbox-gl.css";
 // import "v-mapbox/dist/v-mapbox.css";
-///
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import VMap from "v-mapbox";
 import mapboxgl from "mapbox-gl";
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
 mapboxgl.accessToken =
   "pk.eyJ1Ijoic29jaWFsZXhwbG9yZXIiLCJhIjoiREFQbXBISSJ9.dwFTwfSaWsHvktHrRtpydQ";
@@ -43,23 +44,14 @@ const state = reactive({
     zoom: 11,
     maxZoom: 22,
   },
-  data: []
+  api_data: []
 });
-// mapboxgl.accessToken =
-//   "pk.eyJ1Ijoic29jaWFsZXhwbG9yZXIiLCJhIjoiREFQbXBISSJ9.dwFTwfSaWsHvktHrRtpydQ";
-// var map = new mapboxgl.Map({
-//   container: "map",
-//   style: "mapbox://styles/mapbox/streets-v11?optimize=true",
-//   center: [444.04931277036667, 26.266912177018096] as number[],
-//   zoom: 11,
-//   //     maxZoom: 22,
-// });
 var geojson = {
   type: "FeatureCollection",
   features: [
     {
       type: "Feature",
-      properties: { title: "amit home ", description: "back to home " },
+      properties: { title: "abc ", description: "back to home " },
       geometry: {
         type: "Point",
         coordinates: [444.04931277036667, 26.266912177018096],
@@ -91,31 +83,13 @@ var geojson = {
     },
   ],
 };
-//function onMapLoaded(map: mapboxgl.Map) {
-// console.log("amit kumar");
-// //new mapboxgl.Marker().setLngLat([444.0463, 26.2321]).addTo(map);
-// for (const feature of geojson.features) {
-//     // create a HTML element for each feature
-//     const el = document.createElement("div");
-//     el.className = "marker";
-//     // make a marker for each feature and add to the map
-//     new mapboxgl.Marker(el)
-//         .setLngLat(feature.geometry.coordinates)
-//         .setPopup(
-//             new mapboxgl.Popup({ offset: 25 }) // add popups
-//                 .setHTML(
-//                     `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
-//                 )
-//         )
-//         .addTo(map);
-
 //////////////////////////////////
 function onMapLoaded(map: mapboxgl.Map) {
   getGisData();
   async function getGisData() {
-    state.data = await $fetch("http://localhost:3001/post-gis-backend");
-    console.log("data: ", state.data);
-    for (const feature of state.data) {
+    state.api_data = await $fetch("http://localhost:3001/post-gis-backend");
+    console.log("data: ", state.api_data);
+    for (const feature of state.api_data) {
       console.log("this is come from loop")
       // create a HTML element for each feature
       const el = document.createElement("div");
@@ -125,29 +99,15 @@ function onMapLoaded(map: mapboxgl.Map) {
       new mapboxgl.Marker(el)
         .setLngLat(feature.geography.coordinates)
         .addTo(map);
-      console.log("line 138");
+      console.log("line 99");
     }
   }
 
+  /////////////////////////draw tool///////////////////////
+  var Draw = new MapboxDraw();
+  map.addControl(Draw, 'top-left');
 
 
-  /////////////////////////////////////////
-
-
-
-
-
-
-
-
-  // map.on("mouseover", (e) => {
-  //   console.log("hiii MIT").setPopup(
-  //     new mapboxgl.Popup({ offset: 25 }) // add popups
-  //       .setHTML(
-  //         `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
-  //       )
-  //   );
-  // });
   map.on("dblclick", (e) => {
     new mapboxgl.Marker({
       color: "#" + (Math.random().toString(16) + "87CEEB").substring(2, 8),
@@ -165,18 +125,13 @@ function onMapLoaded(map: mapboxgl.Map) {
       map.setStyle("mapbox://styles/mapbox/" + layerId);
     };
   }
-  // map.addControl(
-  //   new MapboxGeocoder({
-  //     accessToken: mapboxgl.accessToken,
-  //     mapboxgl: mapboxgl,
-  //   })
-  // );
-  // const marker = new mapboxgl.Marker({
-  //   color: "#FFFFFF",
-  //   draggable: true,
-  // })
-  //   .setLngLat([30.5, 50.5])
-  //   .addTo(map);
+
+  const marker = new mapboxgl.Marker({
+    color: "#FFFFFF",
+    draggable: true,
+  })
+    .setLngLat([30.5, 50.5])
+    .addTo(map);
 
   map.addControl(
     new MapboxGeocoder({
@@ -184,8 +139,52 @@ function onMapLoaded(map: mapboxgl.Map) {
       mapboxgl: mapboxgl,
     })
   );
+  map.addSource("Nagpur", {
+    type: "geojson",
+    data: {
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        //<----boundary co-ordinate----->
+        coordinates: [
+          [
+            [431.2188720703125, 23.75518176611264],
+            [430.762939453125, 23.17066382710224],
+            [431.729736328125, 23.160563309048314],
+            [431.2188720703125, 23.75518176611264],
+          ],
+        ],
+      },
+    },
+  });
+  map.addLayer({
+    id: "Nagpur",
+    type: "fill",
+    source: "Nagpur",
+    layout: {},
+    paint: {
+      "fill-color": "#f02",
+      //rediish
+      "fill-opacity": 0.5,
+    },
+  });
+  map.addLayer({
+    id: "outline",
+    type: "line",
+    source: "Nagpur",
+    layout: {},
+    paint: {
+      "line-color": "#000",
+      //dark blackish
+      "line-width": 3,
+    },
+  });
+  
+
 }
-//}
+
+
+
 </script>
 <style>
 .w-screen {
