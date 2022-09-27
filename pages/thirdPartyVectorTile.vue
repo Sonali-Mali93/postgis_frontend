@@ -37,68 +37,12 @@ const state = reactive({
         style: "mapbox://styles/mapbox/satellite-streets-v11",
         // center: [444.04931277036667, 26.266912177018096] as number[],
         zoom: 11,
-        center: [30, 50],
-        projection: 'globe'
+        center: [-87.622088, 41.878781]
     },
     data: []
 });
 
-//   var geojson = {
-//     type: "FeatureCollection",
-//     features: [
-//       {
-//         type: "Feature",
-//         properties: { title: "amit home ", description: "back to home " },
-//         geometry: {
-//           type: "Point",
-//           coordinates: [444.04931277036667, 26.266912177018096],
-//         },
-//       },
-//       {
-//         type: "Feature",
-//         properties: { title: "villege", description: "uttar pradesh" },
-//         geometry: {
-//           type: "Point",
-//           coordinates: [444.0481862425804, 26.266565820518633],
-//         },
-//       },
-//       {
-//         type: "Feature",
-//         properties: { title: "market", description: "uttar pradesh." },
-//         geometry: {
-//           type: "Point",
-//           coordinates: [444.0496963262558, 26.266450368122516],
-//         },
-//       },
-//       {
-//         type: "Feature",
-//         properties: { title: "home", description: "asdfghjhjkl." },
-//         geometry: {
-//           type: "Point",
-//           coordinates: [444.04630064964294, 26.23214630354235],
-//         },
-//       },
-//     ],
-//   };
-
 function onMapLoaded(map: mapboxgl.Map) {
-    getGisData();
-    async function getGisData() {
-        state.data = await $fetch("http://localhost:3001/post-gis-backend");
-        console.log("data: ", state.data);
-        for (const feature of state.data) {
-            console.log("this is come from loop")
-            // create a HTML element for each feature
-            const el = document.createElement("div");
-            el.className = "marker";
-            console.log("data from databse" + feature.geography);
-            // make a marker for each feature and add to the map
-            new mapboxgl.Marker(el)
-                .setLngLat(feature.geography.coordinates)
-                .addTo(map);
-            console.log("line 138");
-        }
-    }
 
     map.on("dblclick", (e) => {
         new mapboxgl.Marker({
@@ -117,21 +61,28 @@ function onMapLoaded(map: mapboxgl.Map) {
             map.setStyle("mapbox://styles/mapbox/" + layerId);
         };
     }
-    // map.addControl(
-    //   new MapboxGeocoder({
-    //     accessToken: mapboxgl.accessToken,
-    //     mapboxgl: mapboxgl,
-    //   })
-    // );
-    // const marker = new mapboxgl.Marker({
-    //   color: "#FFFFFF",
-    //   draggable: true,
-    // })
-    //   .setLngLat([30.5, 50.5])
-    //   .addTo(map);
 
+    map.addLayer(
+        {
+            'id': 'mapillary', // Layer ID
+            'type': 'line',
+            'source': 'mapillary', // ID of the tile source created above
+            // Source has several layers. We visualize the one with name 'sequence'.
+            'source-layer': 'sequence',
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-opacity': 0.1,
+                'line-color': 'rgb(127,255,0)',
+                // 'line-color': '#7CFC00',
+                'line-width': 2
+            }
+        },
+        'road-label' // Arrange our new layer beneath this layer
+    );
 
-    //Add a vector tile source
     map.addControl(
         new MapboxGeocoder({
             accessToken: mapboxgl.accessToken,
@@ -141,8 +92,6 @@ function onMapLoaded(map: mapboxgl.Map) {
     //Map Navigation Control
     map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 
-    //Display globe on webpage
-    map.setFog({});
 
 }
   //}
