@@ -35,7 +35,8 @@ const state = reactive({
   map: {
     container: "map",
     style: "mapbox://styles/mapbox/satellite-streets-v11",
-    center: [444.04931277036667, 26.266912177018096] as number[],
+    center: [72.88948059082031,
+      19.10624355377579] as number[],
     zoom: 11,
     maxZoom: 22,
   },
