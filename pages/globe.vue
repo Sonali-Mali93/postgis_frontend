@@ -36,50 +36,12 @@ const state = reactive({
         container: "map",
         style: "mapbox://styles/mapbox/satellite-streets-v11",
         // center: [444.04931277036667, 26.266912177018096] as number[],
-        zoom: 11,
+        zoom: 2,
         center: [30, 50],
         projection: 'globe'
     },
     data: []
 });
-
-//   var geojson = {
-//     type: "FeatureCollection",
-//     features: [
-//       {
-//         type: "Feature",
-//         properties: { title: "amit home ", description: "back to home " },
-//         geometry: {
-//           type: "Point",
-//           coordinates: [444.04931277036667, 26.266912177018096],
-//         },
-//       },
-//       {
-//         type: "Feature",
-//         properties: { title: "villege", description: "uttar pradesh" },
-//         geometry: {
-//           type: "Point",
-//           coordinates: [444.0481862425804, 26.266565820518633],
-//         },
-//       },
-//       {
-//         type: "Feature",
-//         properties: { title: "market", description: "uttar pradesh." },
-//         geometry: {
-//           type: "Point",
-//           coordinates: [444.0496963262558, 26.266450368122516],
-//         },
-//       },
-//       {
-//         type: "Feature",
-//         properties: { title: "home", description: "asdfghjhjkl." },
-//         geometry: {
-//           type: "Point",
-//           coordinates: [444.04630064964294, 26.23214630354235],
-//         },
-//       },
-//     ],
-//   };
 
 function onMapLoaded(map: mapboxgl.Map) {
     getGisData();
@@ -117,19 +79,6 @@ function onMapLoaded(map: mapboxgl.Map) {
             map.setStyle("mapbox://styles/mapbox/" + layerId);
         };
     }
-    // map.addControl(
-    //   new MapboxGeocoder({
-    //     accessToken: mapboxgl.accessToken,
-    //     mapboxgl: mapboxgl,
-    //   })
-    // );
-    // const marker = new mapboxgl.Marker({
-    //   color: "#FFFFFF",
-    //   draggable: true,
-    // })
-    //   .setLngLat([30.5, 50.5])
-    //   .addTo(map);
-
 
     //Add a vector tile source
     map.addControl(
