@@ -37,7 +37,7 @@ const state = reactive({
         style: "mapbox://styles/mapbox/satellite-streets-v11",
         // center: [444.04931277036667, 26.266912177018096] as number[],
         zoom: 11,
-        center: [30, 50],
+        center: [30, 50.0],
         projection: 'globe'
     },
     data: []
