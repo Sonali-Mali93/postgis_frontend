@@ -34,73 +34,41 @@ mapboxgl.accessToken =
 const state = reactive({
     map: {
         container: "map",
-        style: 'mapbox://styles/mapbox/light-v10',
-        zoom: 11,
+        style: 'mapbox://styles/mapbox/cjaudgl840gn32rnrepcb9b9g',
+        zoom: 5,
         maxZoom: 22,
-        center: [-74.5447, 40.6892]
+        center: [-119.5591, 37.715]
     },
     data: []
 });
 
 
 function onMapLoaded(map: mapboxgl.Map) {
-    getGisData();
-    async function getGisData() {
-        state.data = await $fetch("http://localhost:3001/post-gis-backend");
-        console.log("data: ", state.data);
-        for (const feature of state.data) {
-            console.log("this is come from loop")
-            // create a HTML element for each feature
-            const el = document.createElement("div");
-            el.className = "marker";
-            console.log("data from databse" + feature.geography);
-            // make a marker for each feature and add to the map
-            new mapboxgl.Marker(el)
-                .setLngLat(feature.geography.coordinates)
-                .addTo(map);
-            console.log("line 138");
-        }
-    }
 
-    map.on("dblclick", (e) => {
-        new mapboxgl.Marker({
-            color: "#" + (Math.random().toString(16) + "87CEEB").substring(2, 8),
-            draggable: true,
-        })
-            .setLngLat([e.lngLat.lng, e.lngLat.lat])
-            .addTo(map);
-        console.log(`A click event has occurred at ${e.lngLat}`);
-    });
-    const layerList = document.getElementById("menu");
-    const inputs = layerList.getElementsByTagName("input");
-    for (const input of inputs) {
-        input.onclick = (layer) => {
-            const layerId = layer.target.id;
-            map.setStyle("mapbox://styles/mapbox/" + layerId);
-        };
-    }
-
-    //Map Navigation Control
-    map.addControl(new mapboxgl.NavigationControl(), 'top-left');
-
-    map.addSource('wms-test-source', {
-        'type': 'raster',
-        // use the tiles option to specify a WMS tile source URL
-        // https://docs.mapbox.com/mapbox-gl-js/style-spec/sources/
-        'tiles': [
-            'https://img.nj.gov/imagerywms/Natural2015?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=Natural2015'
-        ],
-        'tileSize': 256
+    map.addSource('dem', {
+        'type': 'raster-dem',
+        'url': 'mapbox://mapbox.mapbox-terrain-dem-v1'
     });
     map.addLayer(
         {
-            'id': 'wms-test-layer',
-            'type': 'raster',
-            'source': 'wms-test-source',
-            'paint': {}
+            'id': 'hillshading',
+            'source': 'dem',
+            'type': 'hillshade'
+            // insert below waterway-river-canal-shadow;
+            // where hillshading sits in the Mapbox Outdoors style
         },
-        'aeroway-line'
+        'waterway-river-canal-shadow'
     );
+    //Map Navigation Control
+    map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+    //Search Bar
+    map.addControl(
+        new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl,
+        })
+    );
+
 }
   //}
 </script>
