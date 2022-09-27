@@ -16,7 +16,6 @@
         <input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
         <label for="outdoors-v11">outdoors</label>
       </div>
-      <!-- Amit -->
     </main>
     <p>{{state.data}}</p>
   </div>
