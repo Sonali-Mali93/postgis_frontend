@@ -138,7 +138,8 @@ function onMapLoaded(map: mapboxgl.Map) {
       mapboxgl: mapboxgl,
     })
   );
-
+  //Map Navigation Control
+  map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 
   map.addSource('mapbox-terrain', {
     type: 'vector',
