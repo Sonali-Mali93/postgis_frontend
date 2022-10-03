@@ -114,7 +114,7 @@ var geojson = {
 function onMapLoaded(map: mapboxgl.Map) {
     getGisData();
     async function getGisData() {
-        state.data = await $fetch("http://localhost:3001/post-gis-backend");
+        state.data = await $fetch("http://localhost:3001/map/geom");
         console.log("data: ", state.data);
         for (const feature of state.data) {
             console.log("this is come from loop")

@@ -17,7 +17,6 @@
                 <label for="outdoors-v11">outdoors</label>
             </div>
         </main>
-        <p>{{state.data}}</p>
     </div>
 </template>
 <script setup lang="ts">
