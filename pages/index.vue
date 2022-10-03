@@ -137,13 +137,13 @@ function onMapLoaded(map: mapboxgl.Map) {
     .addTo(map);
 
 
-  // Add directions to map
-  map.addControl(
-    new MapboxDirection({
-      accessToken: mapboxgl.accessToken,
-    }),
-    "top-left"
-  );
+  // // Add directions to map
+  // map.addControl(
+  //   new MapboxDirection({
+  //     accessToken: mapboxgl.accessToken,
+  //   }),
+  //   "top-left"
+  // );
   //Search Bar
   map.addControl(
     new MapboxGeocoder({
@@ -157,11 +157,11 @@ function onMapLoaded(map: mapboxgl.Map) {
   map.addControl(Draw, 'top-left');
 
 
-  //Map Navigation Control
-  map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+  // //Map Navigation Control
+  // map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 
-  //Add a fullscreen control to a map
-  map.addControl(new mapboxgl.FullscreenControl(), 'bottom-left');
+  // //Add a fullscreen control to a map
+  // map.addControl(new mapboxgl.FullscreenControl(), 'bottom-left');
 
 
 
@@ -208,7 +208,7 @@ function onMapLoaded(map: mapboxgl.Map) {
   });
   polygon();
   async function polygon() {
-    state.polygon = await $fetch("http://localhost:3001/backend/polygon");
+    state.polygon = await $fetch("http://localhost:3001/map/geom");
     console.log(state.polygon);
     console.log("data: ", state.polygon);
     const featureCollection = {

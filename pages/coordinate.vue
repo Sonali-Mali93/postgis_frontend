@@ -1,24 +1,27 @@
 <template>
     <div class="main-div">
-        <div class="left-div">{{ state.arr }}
-            {{state.details.name}}
-            {{state.details.desc}}
+        <div class="left-div">
+            <!-- {{ state.arr }} -->
+            <!-- {{inputData.details.name}}
+            {{inputData.details.desc}} -->
+            <input type="checkbox" name="" id="">{{ inputData.details.name }} {{ inputData.details.desc }}
+
         </div>
         <div class="right-div">
-            <form v-if="state.flag" action="" class="form-control1" v-on:submit.prevent>
+            <form v-if="state.flag" action="#" v-on:submit.prevent class="form-control1">
                 <table>
                     <tr>
                         <td><label class="label1" for="name">Name:</label></td>
-                        <td><input class="input1" v-model="state.details.name" id="nameid" type="text" name="name">
+                        <td><input class="input1" v-model="inputData.details.name" id="nameid" type="text" name="name">
                         </td>
                     </tr>
                     <tr>
                         <td><label class="label1" for="name">Description:</label></td>
-                        <td><input class="input1" v-model="state.details.desc" id="descid" type="text" name="desc">
+                        <td><input class="input1" v-model="inputData.details.desc" id="descid" type="text" name="desc">
                         </td>
                     </tr>
                     <tr>
-                        <td><button class="btn1" type="submit">Submit</button></td>
+                        <td><button class="btn1" type="submit" @click="SubmitForm">Submit</button></td>
                     </tr>
                 </table>
             </form>
@@ -54,7 +57,16 @@ const state = reactive({
     arr: [],
 });
 
+const inputData = reactive({
+    details: {
+        name: "",
+        desc: ""
+    }
+
+})
+
 function onMapLoaded(map: mapboxgl.Map) {
+
     //Search box
     map.addControl(
         new MapboxGeocoder({
@@ -79,25 +91,33 @@ function onMapLoaded(map: mapboxgl.Map) {
     async function updateArea(e) {
 
         // const data = draw.getAll();
-        // var x = draw.getAll();
-        let coordinates = e.features[0].geometry.coordinates;
-        let type1 = e.features[0].geometry.type;
-        let polygon = {
+        var x = draw.getAll();
+        // let coordinates = e.features[0].geometry.coordinates;
+        // let type1 = e.features[0].geometry.type;
+        // let polygon = {
 
-            type: `${type1}`,
-            coordinates: `${coordinates}`,
-            name: `${state.details.name}`,
-            description: `${state.details.desc}`
-        };
-        console.log("polygon data", polygon)
+        //     type: `${type1}`,
+        //     coordinates: `${coordinates}`,
+        //     name: `${state.details.name}`,
+        //     description: `${state.details.desc}`
+        // };
+        // console.log("polygon data", polygon)
         var x = draw.getAll();
 
-        // state.arr.push(x);
+        state.arr.push(x);
+        state.arr.push(inputData.details)
         state.flag = true
-        state.arr.push(polygon)
+        // state.arr.push(polygon)
+        console.log("data after name and desc", state.arr)
 
         console.log(x["features"][0]["geometry"]["coordinates"]);
         console.log("polygon data  coordinates", x);
+        // function btnClick() {
+        //     // e.preventDefault();
+        //     console.log("hello ")
+        // }
+
+        // btnClick()
 
     }
 

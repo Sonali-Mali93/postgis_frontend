@@ -37,6 +37,7 @@ const state = reactive({
         style: 'mapbox://styles/examples/cke97f49z5rlg19l310b7uu7j',
         zoom: 2,
         center: [30, 50],
+
     },
     data: []
 });

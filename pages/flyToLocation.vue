@@ -7,9 +7,6 @@
     </div>
 </template>
 <script setup lang="ts">
-// import "mapbox-gl/dist/mapbox-gl.css";
-// import "v-mapbox/dist/v-mapbox.css";
-///
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import VMap from "v-mapbox";
 import mapboxgl from "mapbox-gl";
@@ -21,7 +18,6 @@ const state = reactive({
     map: {
         container: "map",
         style: 'mapbox://styles/mapbox/streets-v11',
-        // center: [444.04931277036667, 26.266912177018096] as number[],
         zoom: 2,
         center: [30, 50],
         projection: 'globe'
