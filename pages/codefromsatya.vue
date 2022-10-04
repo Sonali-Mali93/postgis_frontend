@@ -1,13 +1,4 @@
 <template>
-    <!--  class="w-screen h-screen" -->
-    <!-- <main> -->
-
-    <head>
-        <meta charset="utf-8" />
-        <title>Mapbox Event : Directions</title>
-        <meta name="robots" content="noindex, nofollow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-    </head>
     <!-- Full Screen View -->
     <div class="main">
         <!-- Toggle Bar code -->
@@ -165,7 +156,7 @@ async function getMapData(map: mapboxgl.Map) {
                             .addTo(map);
                     });
                 }
-               
+
                 console.log("Polygon is Drawn");
                 // Draw polygon here
                 break;
@@ -177,7 +168,7 @@ async function getMapData(map: mapboxgl.Map) {
                 break;
         }
     });
-   
+
 }
 function showDataOnMap(i) {
     console.log("Checked or Unchecked");
