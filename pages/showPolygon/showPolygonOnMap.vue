@@ -1,11 +1,4 @@
 <template>
-
-    <head>
-        <meta charset="utf-8" />
-        <title>||Mapbox||</title>
-        <meta name="robots" content="noindex, nofollow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-    </head>
     <!-- Full Screen View -->
     <div class="main">
         <!-- Toggle Bar code -->
@@ -22,24 +15,24 @@
                         <th>Opacity</th>
                         <th>Delete</th>
                     </tr>
-                    <tr v-for="(val, index) in data.mapEvent" :key="val.name">
-                        <td>{{ index }} ) {{ val.name }}</td>
+                    <tr v-for="(val, index) in state.polygon" :key="val.name">
+                        <td>{{ index + 1 }}) {{ val.name }}</td>
                         <td>{{ val.desc }}</td>
                         <td>
                             <!--   v-model="info.checkedInfo"
-                            :value="data.coordinates" -->
+                          :value="data.coordinates" -->
                             <!-- id="{{index}}"  v-bind:value="data.coordinates"  v-model="info.checkedInfo" -->
                             <input type="checkbox" name="dataEvent" id="checkedData"
-                                @click="showDataOnMap($event, index)" />
+                                @click="GeoJSONDataToggle($event, index)" />
                         </td>
                         <td>
                             <!-- v-model="info.opacity" -->
                             <input type="range" @change="changeColorOpacity(index)" min="1" max="10"
                                 v-model="info.opacity" />
                         </td>
-                        <td>
-                            <a @click="deleteLayer(index)">delete</a>
-                        </td>
+                        <!-- <td>
+                            <a @click="onDeleteOfProduct(val.id)">delete</a>
+                        </td> -->
                     </tr>
                 </table>
             </div>
@@ -112,8 +105,8 @@ const state = reactive({
             "pk.eyJ1Ijoic2F0eWEtYXV0aSIsImEiOiJjbDdwdnFqMWIwMWF3M3BxZ3dvaTZlNW5yIn0.wrAe-_808WZm-CBKVTwfIw",
         style: "mapbox://styles/mapbox/streets-v11?optimize=true",
         // center: [444.04931277036667, 26.266912177018096] as number[], //uses longitude, latitude
-        center: [80.93902587890625, 26.841533092305998] as number[],
-        zoom: 7,
+        center: [76.57470703125, 19.766703551716976] as number[],
+        zoom: 4,
         maxZoom: 22,
         crossSourceCollisions: false,
         failIfMajorPerformanceCaveat: false,
@@ -145,12 +138,9 @@ async function getMapData(tempMap: mapboxgl.Map) {
         "pk.eyJ1Ijoic2F0eWEtYXV0aSIsImEiOiJjbDdwdnFqMWIwMWF3M3BxZ3dvaTZlNW5yIn0.wrAe-_808WZm-CBKVTwfIw";
     if (info.changer == true) {
         let i = info.deleteIndex;
-        // data.map.removeLayer(data.mapEvent[i].geom.id);
-        // data.map.removeSource(data.mapEvent[i].geom.id);
         info.changer = false;
     }
     info.changer = false;
-    //   data.map.addControl(new mapboxgl.NavigationControl());
     var Draw = new MapboxDraw({
         displayControlsDefault: true,
         // Select which mapbox-gl-draw control buttons to add to the map.
@@ -181,114 +171,114 @@ async function getMapData(tempMap: mapboxgl.Map) {
         state.polygon = await $fetch("http://localhost:3001/map/geom");
         console.log(state.polygon);
         console.log("data: ", state.polygon);
-        const featureCollection = {
-            type: "geojson",
-            data: {
-                type: "FeatureCollection",
-                features: [],
-            },
-        };
-        featureCollection.data.features = state.polygon.map((element) => {
-            return {
-                type: "Feature",
-                geometry: {
-                    type: "Polygon",
-                    coordinates: element.geom.coordinates,
-                },
-            };
-        });
-        data.map.addSource("polygon-data", featureCollection);
-        data.map.addLayer({
-            id: "park-boundary",
-            type: "fill",
-            source: "polygon-data",
-            paint: {
-                "fill-color": "#A020F0",
-                "fill-opacity": 0.4,
-            },
-        });
+        // const featureCollection = {
+        //     type: "geojson",
+        //     data: {
+        //         type: "FeatureCollection",
+        //         features: [],
+        //     },
+        // };
+        // featureCollection.data.features = state.polygon.map((element) => {
+        //     return {
+        //         type: "Feature",
+        //         geometry: {
+        //             type: "Polygon",
+        //             coordinates: element.geom.coordinates,
+        //         },
+        //     };
+        // });
+        // data.map.addSource("polygon-data", featureCollection);
+        // data.map.addLayer({
+        //     id: "park-boundary",
+        //     type: "fill",
+        //     source: "polygon-data",
+        //     paint: {
+        //         "fill-color": "#A020F0",
+        //         "fill-opacity": 0.4,
+        //     },
+        // });
     }
 }
 // // this function is used to show and hide mapEvent
-function showDataOnMap(e, index) {
-    console.log(e.target.checked);
-    console.log("data.layers ", data.mapEvent);
-    if (e.target.checked == true) {
-        info.changer = false;
-        var x;
-        let colorPick;
-        let flyToLocation;
-        let flyToLocation1;
-        let colorSelect = data.mapEvent.filter((e) => {
-            if (e.geom.id == data.mapEvent[index].geom.id) {
-                flyToLocation = e.geom.geometry.coordinates[0];
-                flyToLocation1 = e.geom.geometry.coordinates;
-                colorPick = e.color;
-                return e.color;
-            }
-        });
-        console.log("flyloc", flyToLocation);
-        console.log("typeData", data.mapEvent[index].geom);
-        let type = data.mapEvent[index].geom.geometry.type;
-        let latlngArr = [];
-        if (type == "LineString") {
-            console.log("It is LineString");
-            flyToLocation.map((e) => {
-                console.log("e", e);
-                latlngArr.push(e);
-            });
-        }
-        if (type == "Polygon") {
-            console.log("It is Polygon");
-            latlngArr = flyToLocation[0];
-        }
-        if (type == "Point") {
-            console.log("It is Point");
-            console.log("point data", flyToLocation1);
-            console.log("point data1", flyToLocation1[0]);
-            console.log("point data2", flyToLocation1[1]);
-            latlngArr = [flyToLocation1[0], flyToLocation1[1]];
-            x = new mapboxgl.Marker({
-                draggable: true,
-                color: colorPick,
-            })
-                .setLngLat([latlngArr[0], latlngArr[1]])
-                .addTo(data.map);
-        }
-        let latlng = flyToLocation[0];
-        console.log("latlng", latlng);
-        console.log("exact value latlng array ", latlngArr);
-        // Fly to a random location
-        data.map.flyTo({
-            center: [latlngArr[0], latlngArr[1]],
-            zoom: 6,
-            essential: true, // this animation is considered essential with respect to prefers-reduced-motion
-        });
-        console.log("selected color", colorSelect);
-        console.log("Pick color", colorPick);
-        console.log("checked", data.mapEvent[index].geom.id);
-        const geometry: any = data.mapEvent[index].geom;
-        console.log("geometry", geometry);
-        let sId: string = data.mapEvent[index].geom.id;
-        let randonNo = Math.round(Math.random() * 1e9);
-        console.log("randonNo", randonNo);
-        data.map.addSource(data.mapEvent[index].geom.id, {
-            type: "geojson",
-            data: geometry,
-        });
-        data.map.addLayer({
-            id: data.mapEvent[index].geom.id,
-            source: data.mapEvent[index].geom.id,
-            type: "fill",
-            layout: {},
-            paint: { "fill-color": colorPick, "fill-opacity": 0.5 },
-        });
-    } else {
-        data.map.removeLayer(data.mapEvent[index].geom.id);
-        data.map.removeSource(data.mapEvent[index].geom.id);
-        data.map.marker.remove(x);
-    }
-}
+// function showDataOnMap(e, index) {
+//     console.log(e.target.checked);
+//     console.log("data.layers ", data.mapEvent);
+//     if (e.target.checked == true) {
+//         info.changer = false;
+//         var x;
+//         let colorPick;
+//         let flyToLocation;
+//         let flyToLocation1;
+//         let colorSelect = data.mapEvent.filter((e) => {
+//             if (e.geom.id == data.mapEvent[index].geom.id) {
+//                 flyToLocation = e.geom.geometry.coordinates[0];
+//                 flyToLocation1 = e.geom.geometry.coordinates;
+//                 colorPick = e.color;
+//                 return e.color;
+//             }
+//         });
+//         console.log("flyloc", flyToLocation);
+//         console.log("typeData", data.mapEvent[index].geom);
+//         let type = data.mapEvent[index].geom.geometry.type;
+//         let latlngArr = [];
+//         if (type == "LineString") {
+//             console.log("It is LineString");
+//             flyToLocation.map((e) => {
+//                 console.log("e", e);
+//                 latlngArr.push(e);
+//             });
+//         }
+//         if (type == "Polygon") {
+//             console.log("It is Polygon");
+//             latlngArr = flyToLocation[0];
+//         }
+//         if (type == "Point") {
+//             console.log("It is Point");
+//             console.log("point data", flyToLocation1);
+//             console.log("point data1", flyToLocation1[0]);
+//             console.log("point data2", flyToLocation1[1]);
+//             latlngArr = [flyToLocation1[0], flyToLocation1[1]];
+//             x = new mapboxgl.Marker({
+//                 draggable: true,
+//                 color: colorPick,
+//             })
+//                 .setLngLat([latlngArr[0], latlngArr[1]])
+//                 .addTo(data.map);
+//         }
+//         let latlng = flyToLocation[0];
+//         console.log("latlng", latlng);
+//         console.log("exact value latlng array ", latlngArr);
+//         // Fly to a random location
+//         data.map.flyTo({
+//             center: [latlngArr[0], latlngArr[1]],
+//             zoom: 6,
+//             essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+//         });
+//         console.log("selected color", colorSelect);
+//         console.log("Pick color", colorPick);
+//         console.log("checked", data.mapEvent[index].geom.id);
+//         const geometry: any = data.mapEvent[index].geom;
+//         console.log("geometry", geometry);
+//         let sId: string = data.mapEvent[index].geom.id;
+//         let randonNo = Math.round(Math.random() * 1e9);
+//         console.log("randonNo", randonNo);
+//         data.map.addSource(data.mapEvent[index].geom.id, {
+//             type: "geojson",
+//             data: geometry,
+//         });
+//         data.map.addLayer({
+//             id: data.mapEvent[index].geom.id,
+//             source: data.mapEvent[index].geom.id,
+//             type: "fill",
+//             layout: {},
+//             paint: { "fill-color": colorPick, "fill-opacity": 0.5 },
+//         });
+//     } else {
+//         data.map.removeLayer(data.mapEvent[index].geom.id);
+//         data.map.removeSource(data.mapEvent[index].geom.id);
+//         data.map.marker.remove(x);
+//     }
+// }
 async function submit() {
     info.data1 = {
         name: info.name,
@@ -340,19 +330,58 @@ function changeColorOpacity(index) {
         paint: { "fill-color": colorPick, "fill-opacity": colorOpacity / 10 },
     });
 }
-function deleteLayer(i) {
-    console.log("delete", i);
-    var confirmation = confirm(" Click OK to delete data !!!");
-    if (confirmation == true) {
-        let index = i + 1;
-        data.mapEvent.splice(index, 1);
-        info.changer = true;
-        info.deleteIndex = i;
-        data.map.removeLayer(data.mapEvent[i].geom.id);
-        data.map.removeSource(data.mapEvent[i].geom.id);
-        getMapData(data.map);
+function GeoJSONDataToggle(e, index) {
+    console.log(e, index);
+    console.log("Checkbox clicked", state.polygon);
+    if (e.target.checked == true) {
+        console.log("index", state.polygon[index].geom);
+        data.map.addSource(state.polygon[index].id, {
+            type: "geojson",
+            data: state.polygon[index].geom,
+        });
+        for (let i of state.polygon)
+            if (i.geom.type == "Polygon") {
+                data.map.addLayer({
+                    id: state.polygon[index].id,
+                    source: state.polygon[index].id,
+                    type: "fill",
+                    layout: {},
+                    paint: {
+                        // "fill-color": "#0000FF",
+                        "fill-color": state.polygon[index].color,
+                        "fill-opacity": 0.8,
+                        // "fill-outline-color": "#000000"
+                    },
+                });
+
+            }
+            else if (i.geom.type == "LineString") {
+                data.map.addLayer({
+                    id: state.polygon[index].id,
+                    source: state.polygon[index].id,
+                    type: "line",
+                    layout: {},
+                    paint: {
+                        "line-color": state.polygon[index].color
+                    },
+                });
+            }
+
+        // data.map.addLayer({
+        //     id: state.polygon[index].id,
+        //     source: state.polygon[index].id,
+        //     type: "fill",
+        //     layout: {},
+        //     paint: {
+        //         // "fill-color": "#0000FF",
+        //         "fill-color": state.polygon[index].color,
+        //         "fill-opacity": 0.8,
+        //         "fill-outline-color": "#000000"
+        //     },
+        // });
     } else {
-        alert("Something goes wrong!!!");
+        data.map.removeLayer(state.polygon[index].id);
+        data.map.removeSource(state.polygon[index].id);
     }
 }
 function Cancel() {
@@ -384,13 +413,13 @@ body {
 
 .left1 {
     height: 100vh;
-    width: 20vw;
+    width: 35vw;
     float: left;
 }
 
 .right1 {
     height: 100vh;
-    width: 80vw;
+    width: 65vw;
     float: right;
     position: relative;
 }
@@ -443,7 +472,6 @@ body {
     height: 18px;
     width: 140px;
     margin: 1px;
-    /* background-color: teal */
 }
 
 .label {
